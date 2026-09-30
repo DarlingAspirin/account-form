@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>个人IP账号登录信息表</title>
+<style>
+  :root{
+    --bg:#f4f6f8;
+    --card:#ffffff;
+    --text:#1f2937;
+    --muted:#6b7280;
+    --line:#d9dee7;
+    --accent:#111827;
+    --soft:#eef1f5;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",Arial,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+  }
+  .wrap{
+    width:min(1180px,96vw);
+    margin:24px auto 48px;
+  }
+  .topbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    flex-wrap:wrap;
+    margin-bottom:16px;
+  }
+  .titlebox h1{margin:0;font-size:26px}
+  .titlebox p{margin:6px 0 0;color:var(--muted);font-size:14px}
+  .actions{display:flex;gap:10px;flex-wrap:wrap}
+  button{
+    border:0;
+    border-radius:10px;
+    padding:11px 16px;
+    font-size:14px;
+    font-weight:700;
+    cursor:pointer;
+  }
+  .primary{background:var(--accent);color:#fff}
+  .secondary{background:#fff;border:1px solid var(--line);color:var(--text)}
+  .card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:20px;
+    box-shadow:0 8px 24px rgba(0,0,0,.05);
+  }
+  .section-title{
+    font-weight:800;
+    font-size:16px;
+    margin:2px 0 12px;
+  }
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:12px;
+  }
+  .field{display:flex;flex-direction:column;gap:7px}
+  .field.full{grid-column:1/-1}
+  label{font-size:13px;color:#4b5563;font-weight:700}
+  input,textarea{
+    width:100%;
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:11px 12px;
+    font-size:16px;
+    outline:none;
+    background:#fff;
+  }
+  textarea{min-height:120px;resize:vertical;line-height:1.6}
+  input:focus,textarea:focus{border-color:#9ca3af}
+  .divider{height:1px;background:var(--line);margin:20px 0}
+  .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:980px;
+  }
+  th,td{
+    border:1px solid var(--line);
+    padding:8px;
+    vertical-align:middle;
+  }
+  th{
+    background:var(--soft);
+    font-size:13px;
+    text-align:left;
+  }
+  td input{
+    border:0;
+    padding:8px 6px;
+    border-radius:6px;
+    min-width:120px;
+  }
+  td input:focus{background:#f8fafc}
+  .platform{
+    font-weight:800;
+    white-space:nowrap;
+    min-width:92px;
+  }
+  .note{
+    margin-top:14px;
+    font-size:12px;
+    color:var(--muted);
+    line-height:1.6;
+  }
+  .modal{
+    position:fixed;
+    inset:0;
+    background:rgba(17,24,39,.55);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:18px;
+    z-index:10;
+  }
+  .modal.open{display:flex}
+  .modal-card{
+    width:min(980px,96vw);
+    max-height:94vh;
+    overflow:auto;
+    background:#fff;
+    border-radius:16px;
+    padding:16px;
+  }
+  .modal-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    margin-bottom:12px;
+    flex-wrap:wrap;
+  }
+  canvas{
+    width:100%;
+    height:auto;
+    display:block;
+    border:1px solid #ddd;
+    background:#fff;
+  }
+  @media(max-width:760px){
+    .wrap{width:94vw;margin:16px auto 32px}
+    .grid{grid-template-columns:1fr}
+    .field.full{grid-column:auto}
+    .titlebox h1{font-size:22px}
+    .titlebox p{font-size:13px}
+    .card{padding:14px}
+    .actions{width:100%}
+    .actions button{flex:1}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div class="titlebox">
+      <h1>个人IP账号登录信息表</h1>
+      <p>填写完成后，可一键生成高清 PNG 图片。所有数据仅在当前浏览器本地处理。</p>
+    </div>
+    <div class="actions">
+      <button class="secondary" onclick="clearForm()">清空表格</button>
+      <button class="primary" onclick="generateImage()">生成并保存图片</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="section-title">基础信息</div>
+    <div class="grid">
+      <div class="field">
+        <label>账号 / IP 名称</label>
+        <input id="ipName">
+      </div>
+      <div class="field">
+        <label>门店 / 品牌名称</label>
+        <input id="brandName">
+      </div>
+      <div class="field full">
+        <label>个人简介</label>
+        <textarea id="bio"></textarea>
+      </div>
+      <div class="field full">
+        <label>门店地址</label>
+        <input id="address">
+      </div>
+      <div class="field">
+        <label>门店联系电话</label>
+        <input id="shopPhone">
+      </div>
+      <div class="field">
+        <label>主要绑定邮箱</label>
+        <input id="mainEmail">
+      </div>
+      <div class="field">
+        <label>主要绑定电话</label>
+        <input id="mainPhone">
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="section-title">平台账号信息</div>
+    <div class="table-wrap">
+      <table id="accountTable">
+        <thead>
+          <tr>
+            <th>平台</th>
+            <th>昵称 / 姓名</th>
+            <th>账号</th>
+            <th>邮箱</th>
+            <th>电话</th>
+            <th>密码</th>
+            <th>备注</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="platform">Google</td><td><input></td><td><input></td><td><input></td><td><input></td><td><input></td><td><input></td></tr>
+          <tr><td class="platform">TikTok</td><td><input></td><td><input></td><td><input></td><td><input></td><td><input></td><td><input></td></tr>
+          <tr><td class="platform">Instagram</td><td><input></td><td><input></td><td><input></td><td><input></td><td><input></td><td><input></td></tr>
+          <tr><td class="platform">Facebook</td><td><input></td><td><input></td><td><input></td><td><input></td><td><input></td><td><input></td></tr>
+          <tr><td class="platform">小红书</td><td><input></td><td><input></td><td><input></td><td><input></td><td><input></td><td><input></td></tr>
+          <tr><td class="platform">YouTube</td><td><input></td><td><input></td><td><input></td><td><input></td><td><input></td><td><input></td></tr>
+          <tr><td class="platform">视频号</td><td><input></td><td><input></td><td><input></td><td><input></td><td><input></td><td><input></td></tr>
+          <tr><td class="platform">抖音</td><td><input></td><td><input></td><td><input></td><td><input></td><td><input></td><td><input></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note">
+      安全提示：此表可能包含账号密码，请仅在可信设备上填写并妥善保存生成的图片。页面不会主动上传、发送或储存你的填写内容。
+    </div>
+  </div>
+</div>
+
+<div id="modal" class="modal">
+  <div class="modal-card">
+    <div class="modal-head">
+      <strong>图片预览</strong>
+      <div class="actions">
+        <button class="secondary" onclick="closeModal()">关闭</button>
+        <button class="primary" onclick="downloadCanvas()">再次保存 PNG</button>
+      </div>
+    </div>
+    <canvas id="canvas"></canvas>
+  </div>
+</div>
+
+<script>
+function val(id){ return (document.getElementById(id).value || '').trim(); }
+
+function wrapText(ctx, text, maxWidth){
+  const lines = [];
+  const paras = String(text || '').split(/\n/);
+  for(const para of paras){
+    if(para === '') { lines.push(''); continue; }
+    let line = '';
+    for(const ch of para){
+      const test = line + ch;
+      if(ctx.measureText(test).width > maxWidth && line){
+        lines.push(line);
+        line = ch;
+      } else {
+        line = test;
+      }
+    }
+    if(line) lines.push(line);
+  }
+  return lines;
+}
+
+function drawText(ctx, text, x, y, maxWidth, lineHeight){
+  const lines = wrapText(ctx, text, maxWidth);
+  for(const line of lines){
+    ctx.fillText(line, x, y);
+    y += lineHeight;
+  }
+  return y;
+}
+
+function tableData(){
+  const rows = [];
+  document.querySelectorAll('#accountTable tbody tr').forEach(tr=>{
+    const platform = tr.querySelector('.platform').textContent.trim();
+    const vals = [...tr.querySelectorAll('input')].map(i=>i.value.trim());
+    rows.push([platform, ...vals]);
+  });
+  return rows;
+}
+
+function roundRect(ctx,x,y,w,h,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);
+  ctx.arcTo(x+w,y,x+w,y+h,r);
+  ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r);
+  ctx.arcTo(x,y,x+w,y,r);
+  ctx.closePath();
+}
+
+function generateImage(){
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+
+  const W = 1800;
+  const margin = 100;
+  const contentW = W - margin*2;
+  const cols = [170,220,220,300,190,220,280];
+  const headerH = 74;
+  const rowH = 86;
+
+  ctx.font = '28px "Microsoft YaHei", Arial';
+
+  const addressText = val('address');
+  const bioText = val('bio');
+
+  const addressLines = wrapText(ctx, addressText, contentW - 250);
+  const addressH = Math.max(44, addressLines.length * 42);
+  const bioLines = wrapText(ctx, bioText, contentW - 80);
+  const bioTextH = Math.max(44, bioLines.length * 44);
+  const rows = tableData();
+
+  const baseInnerH =
+      76
+    + Math.max(58, addressH + 18)
+    + 58
+    + 58
+    + 56
+    + bioTextH
+    + 34;
+
+  const baseCardH = baseInnerH;
+  const tableAreaH = 34 + 62 + headerH + rows.length * rowH;
+  const footerH = 120;
+  const H = 220 + baseCardH + tableAreaH + footerH;
+
+  canvas.width = W;
+  canvas.height = H;
+
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0,0,W,H);
+
+  ctx.fillStyle = '#111827';
+  ctx.font = '700 58px "Microsoft YaHei", Arial';
+  ctx.fillText(val('ipName') || '个人IP账号登录信息表', margin, 115);
+
+  const brand = val('brandName');
+  if (brand) {
+    ctx.fillStyle = '#6b7280';
+    ctx.font = '30px "Microsoft YaHei", Arial';
+    ctx.fillText(brand, margin, 165);
+  }
+
+  let y = 220;
+  ctx.fillStyle = '#f8fafc';
+  roundRect(ctx, margin, y, contentW, baseCardH, 24);
+  ctx.fill();
+
+  let cy = y + 58;
+  const labelX = margin + 38;
+  const valueX = margin + 220;
+
+  ctx.fillStyle = '#111827';
+  ctx.font = '700 34px "Microsoft YaHei", Arial';
+  ctx.fillText('基础信息', labelX, cy);
+
+  cy += 62;
+  ctx.font = '700 27px "Microsoft YaHei", Arial';
+  ctx.fillStyle = '#374151';
+  ctx.fillText('门店地址：', labelX, cy);
+
+  ctx.font = '27px "Microsoft YaHei", Arial';
+  const addrLines = wrapText(ctx, addressText || '', contentW - 250);
+  let addrY = cy;
+  if (addrLines.length) {
+    for (const line of addrLines) {
+      ctx.fillText(line, valueX, addrY);
+      addrY += 42;
+    }
+  }
+  cy += Math.max(58, addrLines.length * 42 + 14);
+
+  const col1X = labelX;
+  const col2X = margin + 900;
+
+  ctx.font = '700 27px "Microsoft YaHei", Arial';
+  ctx.fillStyle = '#374151';
+  ctx.fillText('门店电话：', col1X, cy);
+  ctx.fillText('主要邮箱：', col2X, cy);
+
+  ctx.font = '27px "Microsoft YaHei", Arial';
+  ctx.fillText(val('shopPhone') || '', col1X + 160, cy);
+  ctx.fillText(val('mainEmail') || '', col2X + 160, cy);
+
+  cy += 58;
+
+  ctx.font = '700 27px "Microsoft YaHei", Arial';
+  ctx.fillStyle = '#374151';
+  ctx.fillText('绑定电话：', col1X, cy);
+
+  ctx.font = '27px "Microsoft YaHei", Arial';
+  ctx.fillText(val('mainPhone') || '', col1X + 160, cy);
+
+  cy += 62;
+
+  ctx.fillStyle = '#111827';
+  ctx.font = '700 30px "Microsoft YaHei", Arial';
+  ctx.fillText('个人简介', labelX, cy);
+
+  cy += 50;
+  ctx.font = '27px "Microsoft YaHei", Arial';
+  ctx.fillStyle = '#4b5563';
+  drawText(ctx, bioText || '', labelX, cy, contentW - 76, 44);
+
+  y += baseCardH + 62;
+
+  ctx.fillStyle = '#111827';
+  ctx.font = '700 36px "Microsoft YaHei", Arial';
+  ctx.fillText('平台账号信息', margin, y);
+
+  y += 34;
+
+  const headers = ['平台','昵称 / 姓名','账号','邮箱','电话','密码','备注'];
+  let x = margin;
+
+  ctx.fillStyle = '#eef1f5';
+  for(let i=0;i<cols.length;i++){
+    ctx.fillRect(x, y, cols[i], headerH);
+    ctx.strokeStyle = '#cfd5df';
+    ctx.strokeRect(x, y, cols[i], headerH);
+    ctx.fillStyle = '#111827';
+    ctx.font = '700 25px "Microsoft YaHei", Arial';
+    ctx.fillText(headers[i], x+16, y+46);
+    ctx.fillStyle = '#eef1f5';
+    x += cols[i];
+  }
+
+  y += headerH;
+
+  rows.forEach((row, ri)=>{
+    x = margin;
+    for(let ci=0; ci<cols.length; ci++){
+      ctx.fillStyle = ri % 2 === 0 ? '#ffffff' : '#fbfcfd';
+      ctx.fillRect(x,y,cols[ci],rowH);
+      ctx.strokeStyle = '#d9dee7';
+      ctx.strokeRect(x,y,cols[ci],rowH);
+
+      ctx.fillStyle = '#1f2937';
+      ctx.font = (ci===0 ? '700 ' : '') + '22px "Microsoft YaHei", Arial';
+
+      const txt = row[ci] || '';
+      const lines = wrapText(ctx, txt, cols[ci]-28).slice(0,2);
+
+      let ty = y + 32;
+      lines.forEach(line=>{
+        ctx.fillText(line, x+14, ty);
+        ty += 29;
+      });
+
+      x += cols[ci];
+    }
+    y += rowH;
+  });
+
+  y += 54;
+  ctx.fillStyle = '#6b7280';
+  ctx.font = '24px "Microsoft YaHei", Arial';
+  ctx.fillText('账号交接资料 · 请妥善保管 · 建议仅内部使用', margin, y);
+
+  document.getElementById('modal').classList.add('open');
+  setTimeout(downloadCanvas, 150);
+}
+
+function downloadCanvas(){
+  const canvas = document.getElementById('canvas');
+  if(!canvas.width) return;
+  const a = document.createElement('a');
+  const rawName = val('ipName') || '个人IP账号登录信息表';
+  const safeName = rawName.replace(/[\\/:*?"<>|]/g,'_');
+  a.download = safeName + '.png';
+  a.href = canvas.toDataURL('image/png', 1.0);
+  a.click();
+}
+
+function closeModal(){
+  document.getElementById('modal').classList.remove('open');
+}
+
+function clearForm(){
+  document.querySelectorAll('input, textarea').forEach(el => el.value = '');
+}
+</script>
+</body>
+</html>
