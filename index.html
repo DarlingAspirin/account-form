@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>个人IP账号登录信息表</title>
+<title>IP账号登录信息表</title>
 <style>
   :root{
     --bg:#f4f6f8;
@@ -162,7 +162,7 @@
 <div class="wrap">
   <div class="topbar">
     <div class="titlebox">
-      <h1>个人IP账号登录信息表</h1>
+      <h1>IP账号登录信息表</h1>
       <p>填写完成后，可一键生成高清 PNG 图片。所有数据仅在当前浏览器本地处理。</p>
     </div>
     <div class="actions">
@@ -348,7 +348,7 @@ function generateImage(){
 
   ctx.fillStyle = '#111827';
   ctx.font = '700 58px "Microsoft YaHei", Arial';
-  ctx.fillText(val('ipName') || '个人IP账号登录信息表', margin, 115);
+  ctx.fillText(val('ipName') || 'IP账号登录信息表', margin, 115);
 
   const brand = val('brandName');
   if (brand) {
@@ -481,7 +481,7 @@ function downloadCanvas(){
   const canvas = document.getElementById('canvas');
   if(!canvas.width) return;
   const a = document.createElement('a');
-  const rawName = val('ipName') || '个人IP账号登录信息表';
+  const rawName = val('ipName') || 'IP账号登录信息表';
   const safeName = rawName.replace(/[\\/:*?"<>|]/g,'_');
   a.download = safeName + '.png';
   a.href = canvas.toDataURL('image/png', 1.0);
